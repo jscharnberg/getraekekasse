@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"getraenkekasse/database"
+	"getraenkekasse/helpers"
 	"getraenkekasse/models"
 	"strings"
 
@@ -10,19 +11,25 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func GetUser(c *fiber.Ctx) error {
-	var user models.User
-	if err := c.BodyParser(&user); err != nil {
+type jwt struct {
+	Token string `json:"token"`
+}
+
+func GetSpecUser(c *fiber.Ctx) error {
+	var json jwt
+
+	if err := c.BodyParser(&json); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Ungültige Anfrage",
 		})
 	}
+	userID := helpers.DecodeToken()
 
 	var foundUser models.User
 
 	coll := database.GetCollection("user")
 
-	err := coll.FindOne(c.Context(), bson.M{"userid": user.UserID}).Decode(&foundUser)
+	err := coll.FindOne(c.Context(), bson.M{"userid": userID}).Decode(&foundUser)
 	if err != nil {
 		return c.JSON(&fiber.Map{"error": "User was not found"})
 	}
