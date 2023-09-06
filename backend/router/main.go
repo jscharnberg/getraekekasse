@@ -14,7 +14,7 @@ func SetupRoutes(app *fiber.App) {
 	//setup user group
 	user := app.Group("/user")
 	user.Get("/", handlers.GetUser)
-	user.Get("/login", handlers.Login)
+	user.Post("/login", handlers.Login)
 	user.Post("/new", handlers.CreateUser)
 
 	// setup the todos group
