@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"getraenkekasse/database"
 	"getraenkekasse/helpers"
 	"getraenkekasse/models"
+	"reflect"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,6 +17,8 @@ import (
 type jwt struct {
 	Token string `json:"token"`
 }
+
+//var coll = database.GetCollection("user")
 
 func GetSpecUser(c *fiber.Ctx) error {
 	var json jwt
@@ -62,4 +67,34 @@ func CreateUser(c *fiber.Ctx) error {
 
 	// return the inserted todo
 	return c.Status(200).JSON(fiber.Map{"inserted_id": res.InsertedID})
+}
+
+func DeleteUser(c *fiber.Ctx) error {
+	var json jwt
+
+	if err := c.BodyParser(&json); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Ungültige Anfrage",
+		})
+	}
+	userID := helpers.DecodeToken()
+
+	var foundUser models.User
+
+	coll := database.GetCollection("user")
+
+	err := coll.FindOne(c.Context(), bson.M{"userid": userID}).Decode(&foundUser)
+	if err != nil {
+		return c.JSON(&fiber.Map{"error": "User was not found"})
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
+	res, err := coll.DeleteOne(ctx, bson.M{"_id": foundUser.ID})
+
+	fmt.Println("DeleteOne Result TYPE:", reflect.TypeOf(res))
+
+	if err != nil {
+		fmt.Println("DeleteOne() ERROR:", err)
+	}
+
+	return c.Status(200).JSON(fiber.Map{"deleted_id": foundUser.ID})
 }
