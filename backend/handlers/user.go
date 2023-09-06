@@ -7,7 +7,7 @@ import (
 	"getraenkekasse/helpers"
 	"getraenkekasse/models"
 	"reflect"
-	"strings"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,17 +18,10 @@ type jwt struct {
 	Token string `json:"token"`
 }
 
-//var coll = database.GetCollection("user")
-
 func GetSpecUser(c *fiber.Ctx) error {
-	var json jwt
+	jwt := c.Params("jwt")
 
-	if err := c.BodyParser(&json); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Ungültige Anfrage",
-		})
-	}
-	userID := helpers.DecodeToken()
+	userID := helpers.DecodeToken(jwt)
 
 	var foundUser models.User
 
@@ -55,9 +48,6 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	//person.Username = fmt.Sprintf("%f %l", person.FirstName, person.LastName)
-	usernameWithoutSpace := strings.ToLower(person.FirstName + person.LastName)
-	fmt.Println(usernameWithoutSpace)
 	coll := database.GetCollection("user")
 
 	res, err := coll.InsertOne(c.Context(), person)
@@ -70,23 +60,23 @@ func CreateUser(c *fiber.Ctx) error {
 }
 
 func DeleteUser(c *fiber.Ctx) error {
-	var json jwt
+	userIDString := c.Params("id")
 
-	if err := c.BodyParser(&json); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Ungültige Anfrage",
-		})
+	userID, err := strconv.Atoi(userIDString)
+	if err != nil {
+		fmt.Println("Error during conversion")
 	}
-	userID := helpers.DecodeToken()
 
 	var foundUser models.User
 
 	coll := database.GetCollection("user")
 
-	err := coll.FindOne(c.Context(), bson.M{"userid": userID}).Decode(&foundUser)
+	err = coll.FindOne(c.Context(),
+		bson.M{"userid": userID}).Decode(&foundUser)
 	if err != nil {
 		return c.JSON(&fiber.Map{"error": "User was not found"})
 	}
+
 	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 	res, err := coll.DeleteOne(ctx, bson.M{"_id": foundUser.ID})
 

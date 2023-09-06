@@ -26,9 +26,7 @@ func GenerateAllTokens(userId int) (signedToken string, err error) {
 	return token, err
 }
 
-func DecodeToken() (userID float64) {
-	tokenString := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjEsImV4cCI6MTY5NDA3OTE1Mn0.t6mo9Nacbz-uIvgS7qgLeoxWmYM4nVinWOVO_-R79nY"
-
+func DecodeToken(tokenString string) (userID float64) {
 	// Das JWT-Token parsen und verifizieren
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Hier sollte dein geheimer Schlüssel stehen, der für die Verifizierung des Tokens verwendet wird.
