@@ -8,7 +8,15 @@ import (
 
 func SetupRoutes(app *fiber.App) {
 	app.Get("/health", handlers.HandleHealthCheck)
-	app.Get("/test", handlers.Test)
+
+	app.Post("/test", handlers.Test)
+
+	//setup user group
+	user := app.Group("/user")
+	user.Get("/", handlers.GetUser)
+	user.Get("/login", handlers.Login)
+	user.Post("/new", handlers.CreateUser)
+
 	// setup the todos group
 	//todos := app.Group("/todos")
 	//todos.Get("/", handlers.HandleAllTodos)
