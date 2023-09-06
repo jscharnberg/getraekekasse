@@ -1,8 +1,7 @@
 package main
 
 import (
-	"github.com/bmdavis419/the-better-backend/app"
-	_ "github.com/bmdavis419/the-better-backend/docs"
+	"getraenkekasse/app"
 )
 
 // @title The Better Backend Template

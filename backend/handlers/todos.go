@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"github.com/bmdavis419/the-better-backend/database"
-	"github.com/bmdavis419/the-better-backend/models"
+	"getraenkekasse/database"
+	"getraenkekasse/models"
+
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

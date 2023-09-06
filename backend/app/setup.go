@@ -2,10 +2,11 @@ package app
 
 import (
 	"fmt"
+	"getraenkekasse/config"
+	"getraenkekasse/database"
+	"getraenkekasse/router"
+	"os"
 
-	"github.com/bmdavis419/the-better-backend/config"
-	"github.com/bmdavis419/the-better-backend/database"
-	"github.com/bmdavis419/the-better-backend/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -41,12 +42,9 @@ func SetupAndRunApp() error {
 	// setup routes
 	router.SetupRoutes(app)
 
-	// attach swagger
-	config.AddSwaggerRoutes(app)
-
 	// get the port and start
-	// port := os.Getenv("PORT")
-	app.Listen(":" + "3000")
+	port := os.Getenv("PORT")
+	app.Listen(":" + port)
 
 	return nil
 }
