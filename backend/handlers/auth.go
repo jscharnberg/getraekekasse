@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"getraenkekasse/database"
 	"getraenkekasse/helpers"
 	"getraenkekasse/models"
@@ -11,7 +10,6 @@ import (
 )
 
 func Login(c *fiber.Ctx) error {
-	fmt.Println("start")
 	var user models.User
 	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -23,14 +21,15 @@ func Login(c *fiber.Ctx) error {
 
 	coll := database.GetCollection("user")
 
-	err := coll.FindOne(c.Context(), bson.M{"userid": user.UserID}).Decode(&foundUser)
+	err := coll.FindOne(c.Context(),
+		bson.M{"userid": user.UserID}).Decode(&foundUser)
 	if err != nil {
 		return c.JSON(&fiber.Map{"error": "User was not found"})
 	}
 
 	token, err := helpers.GenerateAllTokens(*&foundUser.UserID)
 
-	return c.JSON(&fiber.Map{
+	return c.Status(200).JSON(&fiber.Map{
 		"token": token,
 	})
 }

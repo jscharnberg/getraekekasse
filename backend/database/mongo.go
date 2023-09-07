@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -30,7 +31,9 @@ func StartMongoDB() error {
 	}
 
 	var err error
+
 	mongoClient, err = mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
+	fmt.Println("df")
 	if err != nil {
 		panic(err)
 	}

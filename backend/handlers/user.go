@@ -1,28 +1,33 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"getraenkekasse/database"
+	"getraenkekasse/helpers"
 	"getraenkekasse/models"
-	"strings"
+	"reflect"
+	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func GetUser(c *fiber.Ctx) error {
-	var user models.User
-	if err := c.BodyParser(&user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Ungültige Anfrage",
-		})
-	}
+type jwt struct {
+	Token string `json:"token"`
+}
+
+func GetSpecUser(c *fiber.Ctx) error {
+	jwt := c.Params("jwt")
+
+	userID := helpers.DecodeToken(jwt)
 
 	var foundUser models.User
 
 	coll := database.GetCollection("user")
 
-	err := coll.FindOne(c.Context(), bson.M{"userid": user.UserID}).Decode(&foundUser)
+	err := coll.FindOne(c.Context(), bson.M{"userid": userID}).Decode(&foundUser)
 	if err != nil {
 		return c.JSON(&fiber.Map{"error": "User was not found"})
 	}
@@ -43,9 +48,6 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	//person.Username = fmt.Sprintf("%f %l", person.FirstName, person.LastName)
-	usernameWithoutSpace := strings.ToLower(person.FirstName + person.LastName)
-	fmt.Println(usernameWithoutSpace)
 	coll := database.GetCollection("user")
 
 	res, err := coll.InsertOne(c.Context(), person)
@@ -55,4 +57,34 @@ func CreateUser(c *fiber.Ctx) error {
 
 	// return the inserted todo
 	return c.Status(200).JSON(fiber.Map{"inserted_id": res.InsertedID})
+}
+
+func DeleteUser(c *fiber.Ctx) error {
+	userIDString := c.Params("id")
+
+	userID, err := strconv.Atoi(userIDString)
+	if err != nil {
+		fmt.Println("Error during conversion")
+	}
+
+	var foundUser models.User
+
+	coll := database.GetCollection("user")
+
+	err = coll.FindOne(c.Context(),
+		bson.M{"userid": userID}).Decode(&foundUser)
+	if err != nil {
+		return c.JSON(&fiber.Map{"error": "User was not found"})
+	}
+
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
+	res, err := coll.DeleteOne(ctx, bson.M{"_id": foundUser.ID})
+
+	fmt.Println("DeleteOne Result TYPE:", reflect.TypeOf(res))
+
+	if err != nil {
+		fmt.Println("DeleteOne() ERROR:", err)
+	}
+
+	return c.Status(200).JSON(fiber.Map{"deleted_id": foundUser.ID})
 }

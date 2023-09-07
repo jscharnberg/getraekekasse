@@ -25,3 +25,42 @@ func GenerateAllTokens(userId int) (signedToken string, err error) {
 
 	return token, err
 }
+
+func DecodeToken(tokenString string) (userID float64) {
+	// Das JWT-Token parsen und verifizieren
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Hier sollte dein geheimer Schlüssel stehen, der für die Verifizierung des Tokens verwendet wird.
+		// Dieser Schlüssel sollte sicher aufbewahrt werden und nicht öffentlich verfügbar sein.
+		// Du solltest den Schlüssel sicher speichern und nicht hart kodiert im Code haben.
+		secretKey := []byte("SECRET_KEY")
+
+		return secretKey, nil
+	})
+
+	if err != nil {
+		fmt.Println("Fehler beim Parsen des JWT-Tokens:", err)
+		return
+	}
+
+	// Überprüfe, ob das Token gültig ist
+	if !token.Valid {
+		fmt.Println("Ungültiges JWT-Token")
+		return
+	}
+
+	// Zugriff auf die Claims aus dem Token
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		fmt.Println("Fehler beim Zugriff auf die Claims")
+		return
+	}
+
+	// Zugriff auf spezifische Claims
+	userID, ok = claims["userid"].(float64)
+	if !ok {
+		fmt.Println("Fehler beim Zugriff auf UserID")
+		return
+	}
+
+	return userID
+}
