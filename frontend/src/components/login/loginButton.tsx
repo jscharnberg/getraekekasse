@@ -19,7 +19,7 @@ function LoginButton() {
                 body: requestBody,
             });
 
-            if (response.ok) {
+            if (response.status == 200) {
                 const data = await response.json();
                 if (data.token !== undefined) {
                     localStorage.setItem('jwt', String(data.token));
@@ -35,7 +35,7 @@ function LoginButton() {
 
     useEffect(() => {
         if (loginSuccess) {
-            window.location.href = '/main';
+            window.location.href = '/';
             //navigate('https://www.google.com');
         }
     }, [loginSuccess, navigate]);

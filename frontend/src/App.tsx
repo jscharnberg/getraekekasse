@@ -8,9 +8,9 @@ function App() {
   return (
     <div className="w-screen h-screen bg-red-300">
       <Routes>
-        <Route path='/' element={<Login />}></Route>
+        <Route path='/login' element={<Login />}></Route>
         <Route path='admin' element={<Adminpage />} />
-        <Route path='/main' element={<Mainpage />} />
+        <Route path='/' element={<Mainpage />} />
       </Routes>
     </div>
   );
