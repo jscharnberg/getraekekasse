@@ -29,7 +29,7 @@ func Login(c *fiber.Ctx) error {
 
 	token, err := helpers.GenerateAllTokens(*&foundUser.UserID)
 
-	return c.JSON(&fiber.Map{
+	return c.Status(200).JSON(&fiber.Map{
 		"token": token,
 	})
 }
