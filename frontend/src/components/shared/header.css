@@ -1,0 +1,39 @@
+/* Header.css */
+.header {
+    display: flex;
+    justify-content: space-between;
+    /* Elemente am Anfang und Ende des Containers ausrichten */
+    align-items: center;
+    /* Vertikal zentrieren */
+    background-color: #333;
+    /* Hintergrundfarbe des Headers */
+    color: white;
+    /* Textfarbe */
+    padding: 10px 20px;
+    /* Innenabstand oben/unten und links/rechts */
+}
+
+.header-title {
+    margin: 0;
+    /* Entfernt den Standardmargin für das <h1>-Element */
+}
+
+.logout-button {
+    background-color: #ff5733;
+    /* Hintergrundfarbe des Logout-Buttons */
+    color: white;
+    /* Textfarbe des Buttons */
+    border: none;
+    /* Entfernt die Standard-Borderrahmen */
+    padding: 10px 20px;
+    /* Innenabstand oben/unten und links/rechts */
+    cursor: pointer;
+    /* Zeige den Zeiger-Cursor beim Überfahren des Buttons */
+    transition: background-color 0.3s;
+    /* Füge eine Übergangseffekt für die Hintergrundfarbe hinzu */
+
+    /* Ändere die Hintergrundfarbe beim Hovern über den Button */
+    &:hover {
+        background-color: #ff7f5e;
+    }
+}

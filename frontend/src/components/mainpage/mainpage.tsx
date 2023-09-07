@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Header from '../shared/header';
 
 export const Mainpage = () => {
     // Die Funktion, die du aufrufen möchtest
@@ -40,17 +41,8 @@ export const Mainpage = () => {
 
     return (
         <div>
+            <Header />
             Moin i bins, Main
-            <br /><br />
-            <button
-                onClick={() => {
-                    localStorage.removeItem('jwt');
-                    window.location.href = '/login';
-                }}
-                className="py-2 px-4 bg-gray-700 text-white mb-5"
-            >
-                Logout
-            </button>
         </div>
     );
 };
