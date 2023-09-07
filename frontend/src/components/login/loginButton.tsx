@@ -1,43 +1,44 @@
-import { useState } from 'react';
-import {useNavigate} from "react-router-dom";
-
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function LoginButton() {
     const [userId, setUserId] = useState('');
+    const [loginSuccess, setLoginSuccess] = useState(false);
     const navigate = useNavigate();
-    const handleLogin = () => {
 
+    const handleLogin = async () => {
+        try {
+            const requestBody = JSON.stringify({ UserId: Number(userId) });
+            const apiUrl = 'http://localhost:8080/user/login';
 
-        // Erstellen Sie einen JSON-Objekt mit der ID im Request-Body
-        const requestBody = JSON.stringify({ UserId: Number(userId) });
-
-        // Definieren Sie die URL Ihrer API-Endpunkts
-        const apiUrl = 'http://localhost:8080/user/login'; // Ersetzen Sie dies durch die tatsächliche URL Ihrer API
-
-        // Senden Sie die POST-Anfrage an die API
-        fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: requestBody,
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                // Hier können Sie mit der Antwort von der API arbeiten
-                console.log('API-Antwort:', data);
-                const token = data.token;
-                localStorage.setItem('jwt', token);
-                navigate("/main");
-            })
-            .catch((error) => {
-                console.error('Fehler beim Senden der Anfrage:', error);
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: requestBody,
             });
 
+            if (response.ok) {
+                const data = await response.json();
+                if (data.token !== undefined) {
+                    localStorage.setItem('jwt', String(data.token));
+                    setLoginSuccess(true);
+                }
+            } else {
+                console.error('Fehler beim Senden der Anfrage:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Fehler beim Senden der Anfrage:', error);
+        }
     };
 
-
-
+    useEffect(() => {
+        if (loginSuccess) {
+            window.location.href = '/main';
+            //navigate('https://www.google.com');
+        }
+    }, [loginSuccess, navigate]);
 
     return (
         <div>
@@ -46,7 +47,8 @@ function LoginButton() {
                 placeholder="Geben Sie Ihre ID ein"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
-            /> <br/><br/>
+            />
+            <br /><br />
             <button
                 className="py-2 px-4 bg-gray-700 text-white mb-5"
                 onClick={handleLogin}>
