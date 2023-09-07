@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import {useNavigate} from "react-router-dom";
+
 
 function LoginButton() {
     const [userId, setUserId] = useState('');
-
+    const navigate = useNavigate();
     const handleLogin = () => {
+
+
         // Erstellen Sie einen JSON-Objekt mit der ID im Request-Body
         const requestBody = JSON.stringify({ UserId: Number(userId) });
 
@@ -24,11 +28,16 @@ function LoginButton() {
                 console.log('API-Antwort:', data);
                 const token = data.token;
                 localStorage.setItem('jwt', token);
+                navigate("/main");
             })
             .catch((error) => {
                 console.error('Fehler beim Senden der Anfrage:', error);
             });
+
     };
+
+
+
 
     return (
         <div>
@@ -37,8 +46,12 @@ function LoginButton() {
                 placeholder="Geben Sie Ihre ID ein"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
-            />
-            <button onClick={handleLogin}>Login</button>
+            /> <br/><br/>
+            <button
+                className="py-2 px-4 bg-gray-700 text-white mb-5"
+                onClick={handleLogin}>
+                LOGIN
+            </button>
         </div>
     );
 }

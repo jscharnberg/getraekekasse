@@ -1,13 +1,13 @@
+import LoginButton from "./loginButton.tsx";
 
 
 export const Login = () => {
     return (
-        <div className="container py-52 px-16 mx-20 ">
+        <div className="container mx-auto py-[7%]">
 
-            <div className="grid grid-cols-12 bg-white rounded-2xl  w-[600px] border h-[500px]">
+            <div className="grid grid-cols-12 mx-auto  bg-white rounded-2xl  w-[600px] border h-[500px]">
                 <div className="col-span-6 self-center p-4">
-                    {/*Image to come*/}
-                    Image
+                    <img className="rounded-2xl" src="./src/assets/soda.jpg" alt=""/>
                 </div>
                 <div className="col-span-6  border-l p-4">
                     <div className="space-y-4 mb-5">
@@ -17,12 +17,11 @@ export const Login = () => {
 
                     <form className="text-xl flex  mb-5" action="">
                         <label className="flex space-x-1">
-                            <p>ID: </p>
-                            <input className='mb-4 border' type='number' />
+                            <LoginButton />
                         </label>
 
+
                     </form>
-                    <button className="py-2 px-4 bg-gray-700 text-white mb-5">LOGIN</button>
 
                     <p className="text-sm">terms of use. Privacy policy</p>
                 </div>
