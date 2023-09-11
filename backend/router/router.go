@@ -17,6 +17,7 @@ func SetupRoutes(app *fiber.App) {
 	user.Get("/:jwt", handlers.GetSpecUser)
 	user.Post("/login", handlers.Login)
 	user.Post("/new", handlers.CreateUser)
+	user.Patch("/update/:id", handlers.UpdateUser)
 	user.Delete("/delete/:id", handlers.DeleteUser)
 
 	//items group

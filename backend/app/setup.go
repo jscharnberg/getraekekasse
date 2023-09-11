@@ -41,8 +41,8 @@ func SetupAndRunApp() error {
 	}))
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:5175", // Ursprung, der erlaubt ist (Sie können auch ein Array von Ursprüngen verwenden)
-		AllowMethods: "GET,POST,PUT,DELETE",   // Erlaubte HTTP-Methoden
+		AllowOrigins: "http://localhost:5175",     // Ursprung, der erlaubt ist (Sie können auch ein Array von Ursprüngen verwenden)
+		AllowMethods: "GET,POST,PUT,PATCH,DELETE", // Erlaubte HTTP-Methoden
 	}))
 
 	// setup routes

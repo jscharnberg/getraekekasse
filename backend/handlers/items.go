@@ -92,28 +92,61 @@ func UpdateItem(c *fiber.Ctx) error {
 			"message": "Ungültige ID",
 		})
 	}
+	var foundItem models.Item
+
+	coll := database.GetCollection("items")
+	fmt.Println(objID)
+	err = coll.FindOne(c.Context(),
+		bson.M{"_id": objID}).Decode(&foundItem)
+	if err != nil {
+		return c.JSON(&fiber.Map{"error": "Item was not found"})
+	}
+
+	var requestBody struct {
+		ItemName string  `json:"itemname"`
+		StockDec int     `json:"stockdec"`
+		Price    float64 `json:"price"`
+	}
+
+	if err := c.BodyParser(&requestBody); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Ungültige Anfrage",
+		})
+	}
 
 	// Holen Sie die zu aktualisierende Ressource aus der Datenbank
-	coll := database.GetCollection("items")
+	coll = database.GetCollection("items")
 
 	filter := bson.M{"_id": objID}
 	update := bson.M{}
 
-	// Hier können Sie die zu aktualisierenden Felder definieren, z.B.:
-	update["itemname"] = "Cola"
-	update["stock"] = 30
-	update["price"] = 1.3
-
-	updateData := bson.M{"$set": update}
-	_, err = coll.UpdateOne(context.TODO(), filter, updateData)
-	if err != nil {
-		fmt.Println(err)
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Fehler beim Aktualisieren der Ressource",
-		})
+	// Aktualisieren Sie die Felder basierend auf den Werten im requestBody
+	if requestBody.ItemName != "" {
+		update["itemname"] = requestBody.ItemName
+	}
+	if requestBody.StockDec != 0 {
+		update["stock"] = foundItem.Stock - requestBody.StockDec
+	}
+	if requestBody.Price != 0 {
+		update["price"] = requestBody.Price
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"message": "Ressource erfolgreich aktualisiert",
-	})
+	if foundItem.Stock-requestBody.StockDec >= 0 {
+		updateData := bson.M{"$set": update}
+		_, err = coll.UpdateOne(context.TODO(), filter, updateData)
+		if err != nil {
+			fmt.Println(err)
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Fehler beim Aktualisieren der Ressource",
+			})
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"message": "Ressource erfolgreich aktualisiert",
+		})
+	} else {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": "Zu wenige Items im Lager",
+		})
+	}
 }
