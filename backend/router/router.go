@@ -26,6 +26,4 @@ func SetupRoutes(app *fiber.App) {
 	items.Get("/:id", handlers.GetSpecItem)
 	items.Post("/new", handlers.CreateItem)
 	items.Patch("/update/:id", handlers.UpdateItem)
-
-	//todos.Put("/:id", handlers.HandleUpdateTodo)
 }

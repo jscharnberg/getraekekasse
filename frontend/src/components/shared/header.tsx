@@ -7,8 +7,8 @@ function Header() {
     }
 
     return (
-        <div className="header">
-            <h1 className="header-title">Meine App</h1>
+        <div className="header bg-[#343a40]">
+            <h1 className="header-title">Getränkekasse</h1>
             <button className="logout-button" onClick={onLogout}>Logout</button>
         </div>
     );

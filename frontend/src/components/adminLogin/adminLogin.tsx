@@ -1,7 +1,7 @@
 import LoginButton from "./loginButton.tsx";
 
 
-export const Login = () => {
+export const AdminLoginPage = () => {
     return (
         <div className="container mx-auto py-[7%]">
 
@@ -22,12 +22,6 @@ export const Login = () => {
 
 
                     </form>
-
-                    <button
-                        className="py-2 px-4 bg-gray-700 text-white mb-5 mt-5"
-                        onClick={() => window.location.href = '/admin/login'}>
-                        Administrator Anmeldung
-                    </button>
                 </div>
             </div>
 
