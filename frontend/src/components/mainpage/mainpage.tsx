@@ -93,7 +93,7 @@ export const Mainpage = () => {
         };
 
         const updateAccBalance = (purchasePrice: Number) => {
-            const userUrl = `http://localhost:8080/user/update/${userData?._id}`
+            const userUrl = `http://localhost:8080/user/${userData?._id}`
 
             const newUserAccBalance = Number(userData?.accbalance) - Number(purchasePrice)
 
@@ -123,7 +123,7 @@ export const Mainpage = () => {
         }
 
         const updateItemStock = (item: any, index: any) => {
-            const itemUrl = `http://localhost:8080/items/update/${item._id}`;
+            const itemUrl = `http://localhost:8080/items/${item._id}`;
 
             const patchData = {
                 stockdec: counts[index] // Hier gib den gewünschten Preiswert an

@@ -4,7 +4,6 @@ import LoginButton from "./loginButton.tsx";
 export const Login = () => {
     return (
         <div className="container mx-auto py-[7%]">
-
             <div className="grid grid-cols-12 mx-auto  bg-white rounded-2xl  w-[600px] border h-[500px]">
                 <div className="col-span-6 self-center p-4">
                     <img className="rounded-2xl" src="./src/assets/soda.jpg" alt="" />

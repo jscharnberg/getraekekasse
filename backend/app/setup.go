@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"getraenkekasse/config"
 	"getraenkekasse/database"
 	"getraenkekasse/router"
@@ -11,7 +10,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"go.mongodb.org/mongo-driver/mongo"
 )
+
+var mongoClient *mongo.Client
 
 func SetupAndRunApp() error {
 	// load env
@@ -21,11 +23,9 @@ func SetupAndRunApp() error {
 	}
 
 	// start database
-	err = database.StartMongoDB()
+	mongoClient = database.GetInstance()
 	if err != nil {
 		return err
-	} else {
-		fmt.Println("woo")
 	}
 
 	// defer closing database
@@ -41,8 +41,9 @@ func SetupAndRunApp() error {
 	}))
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:5175",     // Ursprung, der erlaubt ist (Sie können auch ein Array von Ursprüngen verwenden)
-		AllowMethods: "GET,POST,PUT,PATCH,DELETE", // Erlaubte HTTP-Methoden
+		AllowOrigins:     "*",                         // Ursprung, der erlaubt ist (Sie können auch ein Array von Ursprüngen verwenden)
+		AllowMethods:     "GET,POST,PUT,PATCH,DELETE", // Erlaubte HTTP-Methoden
+		AllowCredentials: true,
 	}))
 
 	// setup routes

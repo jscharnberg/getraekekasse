@@ -8,22 +8,40 @@ import (
 	"getraenkekasse/models"
 	"net/http"
 	"reflect"
-	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type jwt struct {
 	Token string `json:"token"`
 }
 
+func GetAllUsers(c *fiber.Ctx) error {
+	coll := database.GetCollection("user")
+
+	cursor, err := coll.Find(c.Context(), bson.M{})
+	if err != nil {
+		return c.JSON(&fiber.Map{"error": "Error finding users"})
+	}
+	defer cursor.Close(c.Context())
+
+	var users []models.User
+	if err := cursor.All(c.Context(), &users); err != nil {
+		return c.JSON(&fiber.Map{"error": "Error decoding users"})
+	}
+
+	return c.JSON(users)
+}
+
 func GetSpecUser(c *fiber.Ctx) error {
 	jwt := c.Params("jwt")
 
-	userID := helpers.DecodeToken(jwt)
+	userID := helpers.DecodeUserToken(jwt)
 
 	var foundUser models.User
 
@@ -52,7 +70,21 @@ func CreateUser(c *fiber.Ctx) error {
 	}
 
 	coll := database.GetCollection("user")
+	opts := options.FindOne().SetSort(bson.D{{"userid", -1}}) // Sortiert nach userid in absteigender Reihenfolge
 
+	var lastUser models.CreateUser
+	if err := coll.FindOne(context.Background(), bson.D{}, opts).Decode(&lastUser); err != nil {
+		if err != mongo.ErrNoDocuments {
+			return c.Status(500).JSON(fiber.Map{"error": "Datenbankfehler"})
+		}
+		// Wenn keine Dokumente vorhanden sind, setze die userID auf 0 oder einen Startwert
+		lastUser.UserID = 0
+	}
+
+	// Inkrementiere die userid für den neuen Benutzer
+	person.UserID = lastUser.UserID + 1
+
+	// Füge den neuen Benutzer mit der aktualisierten userid ein
 	res, err := coll.InsertOne(c.Context(), person)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"internal server error": err.Error()})
@@ -104,9 +136,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	if requestBody.UserID != 0 {
 		update["userid"] = requestBody.UserID
 	}
-	if requestBody.AccBalance != 0 {
-		update["accbalance"] = requestBody.AccBalance
-	}
+	update["accbalance"] = requestBody.AccBalance
 
 	updateData := bson.M{"$set": update}
 	_, err = coll.UpdateOne(context.TODO(), filter, updateData)
@@ -125,9 +155,15 @@ func UpdateUser(c *fiber.Ctx) error {
 func DeleteUser(c *fiber.Ctx) error {
 	userIDString := c.Params("id")
 
-	userID, err := strconv.Atoi(userIDString)
+	// userID, err := strconv.Atoi(userIDString)
+	// if err != nil {
+	// 	fmt.Println("Error during conversion")
+	// }
+
+	objectID, err := primitive.ObjectIDFromHex(userIDString)
 	if err != nil {
-		fmt.Println("Error during conversion")
+		// Behandle den Fehler, wenn das userID keine gültige ObjectID ist
+		return c.JSON(&fiber.Map{"error": "Invalid ObjectID"})
 	}
 
 	var foundUser models.User
@@ -135,7 +171,7 @@ func DeleteUser(c *fiber.Ctx) error {
 	coll := database.GetCollection("user")
 
 	err = coll.FindOne(c.Context(),
-		bson.M{"userid": userID}).Decode(&foundUser)
+		bson.M{"_id": objectID}).Decode(&foundUser)
 	if err != nil {
 		return c.JSON(&fiber.Map{"error": "User was not found"})
 	}

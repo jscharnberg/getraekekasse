@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"getraenkekasse/config"
 	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,7 +18,20 @@ func GetCollection(name string) *mongo.Collection {
 	return mongoClient.Database(dbName).Collection(name)
 }
 
+func GetInstance() *mongo.Client {
+	if mongoClient == nil {
+		StartMongoDB()
+		err := config.LoadENV()
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return mongoClient
+}
+
 func StartMongoDB() error {
+
 	uri := os.Getenv("MONGODB_URI")
 	if uri == "" {
 		return errors.New("you must set your 'MONGODB_URI' environmental variable. See\n\t https://www.mongodb.com/docs/drivers/go/current/usage-examples/#environment-variable")

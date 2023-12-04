@@ -1,68 +1,54 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// loginButton.tsx
+import React, { useState } from 'react';
 
-function LoginButton() {
-    const [userName, setUserName] = useState('');
+const LoginButton = () => {
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [loginSuccess, setLoginSuccess] = useState(false);
-    const navigate = useNavigate();
 
     const handleLogin = async () => {
-        // try {
-        //     const requestBody = JSON.stringify({ UserId: Number(userId) });
-        //     const apiUrl = 'http://localhost:8080/user/login';
+        try {
+            const response = await fetch('http://localhost:8080/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-        //     const response = await fetch(apiUrl, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: requestBody,
-        //     });
-
-        //     if (response.status == 200) {
-        //         const data = await response.json();
-        //         if (data.token !== undefined) {
-        //             localStorage.setItem('jwt', String(data.token));
-        //             setLoginSuccess(true);
-        //         }
-        //     } else {
-        //         console.error('Fehler beim Senden der Anfrage:', response.statusText);
-        //     }
-        // } catch (error) {
-        //     console.error('Fehler beim Senden der Anfrage:', error);
-        // }
-    };
-
-    useEffect(() => {
-        if (loginSuccess) {
-            window.location.href = '/';
-            //navigate('https://www.google.com');
+            if (response.status === 200) {
+                const data = await response.json();
+                // Speichere den JWT-Token als Cookie mit dem Namen "adminToken"
+                //document.cookie = `adminToken=${data.token}`;
+                localStorage.setItem('adminToken', String(data.token));
+                console.log('Login erfolgreich!');
+                window.location.href = '/admin';
+            } else {
+                console.log('Login fehlgeschlagen');
+            }
+        } catch (error) {
+            console.error('Fehler beim Login:', error);
         }
-    }, [loginSuccess, navigate]);
+    };
 
     return (
         <div>
             <input
-                type="string"
-                placeholder="Nutzername"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
+                type="text"
+                placeholder="Benutzername"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
             />
             <input
-                type="string"
+                type="password"
                 placeholder="Passwort"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <br /><br />
-            <button
-                className="py-2 px-4 bg-gray-700 text-white mb-5"
-                onClick={handleLogin}>
-                LOGIN
+            <button type="button" onClick={handleLogin}>
+                Einloggen
             </button>
         </div>
     );
-}
+};
 
 export default LoginButton;

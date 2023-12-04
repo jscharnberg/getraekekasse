@@ -37,3 +37,24 @@
         background-color: #ff7f5e;
     }
 }
+
+/* header.css */
+/* ... (andere Stile) */
+
+.admin-link {
+    color: #888888;
+    /* Standardmäßige Textfarbe der Links (Grau) */
+    transition: color 0.3s;
+    /* Übergangseffekt für die Textfarbe */
+}
+
+.admin-link:hover {
+    color: #ff0000;
+    /* Textfarbe der Links beim Hovern (Rot) */
+    /* Hier kannst du die gewünschte Hervorhebungsfarbe einstellen */
+}
+
+.admin-link.active {
+    /* Hier kannst du den Stil für den aktiven Link festlegen, z. B. Unterstreichung */
+    text-decoration: underline;
+}
