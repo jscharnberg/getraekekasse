@@ -6,6 +6,8 @@ import (
 	"getraenkekasse/database"
 	"getraenkekasse/models"
 	"net/http"
+	"reflect"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
@@ -104,7 +106,7 @@ func UpdateItem(c *fiber.Ctx) error {
 
 	var requestBody struct {
 		ItemName string  `json:"itemname"`
-		StockDec int     `json:"stockdec"`
+		Stock    int     `json:"stock"`
 		Price    float64 `json:"price"`
 	}
 
@@ -124,14 +126,14 @@ func UpdateItem(c *fiber.Ctx) error {
 	if requestBody.ItemName != "" {
 		update["itemname"] = requestBody.ItemName
 	}
-	if requestBody.StockDec != 0 {
-		update["stock"] = foundItem.Stock - requestBody.StockDec
+	if requestBody.Stock != 0 {
+		update["stock"] = requestBody.Stock
 	}
 	if requestBody.Price != 0 {
 		update["price"] = requestBody.Price
 	}
 
-	if foundItem.Stock-requestBody.StockDec >= 0 {
+	if foundItem.Stock >= 0 {
 		updateData := bson.M{"$set": update}
 		_, err = coll.UpdateOne(context.TODO(), filter, updateData)
 		if err != nil {
@@ -149,4 +151,35 @@ func UpdateItem(c *fiber.Ctx) error {
 			"message": "Zu wenige Items im Lager",
 		})
 	}
+}
+
+func DeleteItem(c *fiber.Ctx) error {
+	itemIDString := c.Params("id")
+
+	objectID, err := primitive.ObjectIDFromHex(itemIDString)
+	if err != nil {
+		// Behandle den Fehler, wenn das userID keine gültige ObjectID ist
+		return c.JSON(&fiber.Map{"error": "Invalid ObjectID"})
+	}
+
+	var foundItem models.Item
+
+	coll := database.GetCollection("items")
+
+	err = coll.FindOne(c.Context(),
+		bson.M{"_id": objectID}).Decode(&foundItem)
+	if err != nil {
+		return c.JSON(&fiber.Map{"error": "Item was not found"})
+	}
+
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
+	res, err := coll.DeleteOne(ctx, bson.M{"_id": foundItem.ID})
+
+	fmt.Println("DeleteOne Result TYPE:", reflect.TypeOf(res))
+
+	if err != nil {
+		fmt.Println("DeleteOne() ERROR:", err)
+	}
+
+	return c.Status(200).JSON(fiber.Map{"deleted_id": foundItem.ID})
 }

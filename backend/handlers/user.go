@@ -155,11 +155,6 @@ func UpdateUser(c *fiber.Ctx) error {
 func DeleteUser(c *fiber.Ctx) error {
 	userIDString := c.Params("id")
 
-	// userID, err := strconv.Atoi(userIDString)
-	// if err != nil {
-	// 	fmt.Println("Error during conversion")
-	// }
-
 	objectID, err := primitive.ObjectIDFromHex(userIDString)
 	if err != nil {
 		// Behandle den Fehler, wenn das userID keine gültige ObjectID ist

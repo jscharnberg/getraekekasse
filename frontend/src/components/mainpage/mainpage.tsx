@@ -126,7 +126,8 @@ export const Mainpage = () => {
             const itemUrl = `http://localhost:8080/items/${item._id}`;
 
             const patchData = {
-                stockdec: counts[index] // Hier gib den gewünschten Preiswert an
+
+                stock: item.stock - counts[index] // Hier gib den gewünschten Preiswert an
             };
             fetch(itemUrl, {
                 method: 'PATCH',

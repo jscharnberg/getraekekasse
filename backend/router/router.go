@@ -25,6 +25,7 @@ func SetupRoutes(app *fiber.App) {
 	items.Get("/:id", handlers.GetSpecItem)
 	items.Post("/", handlers.CreateItem)
 	items.Patch("/:id", handlers.UpdateItem)
+	items.Delete("/:id", handlers.DeleteItem)
 
 	//admin group
 	admin := app.Group("/admin")

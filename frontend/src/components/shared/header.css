@@ -19,8 +19,6 @@
 }
 
 .logout-button {
-    background-color: #ff5733;
-    /* Hintergrundfarbe des Logout-Buttons */
     color: white;
     /* Textfarbe des Buttons */
     border: none;
@@ -33,9 +31,6 @@
     /* Füge eine Übergangseffekt für die Hintergrundfarbe hinzu */
 
     /* Ändere die Hintergrundfarbe beim Hovern über den Button */
-    &:hover {
-        background-color: #ff7f5e;
-    }
 }
 
 /* header.css */
@@ -46,15 +41,11 @@
     /* Standardmäßige Textfarbe der Links (Grau) */
     transition: color 0.3s;
     /* Übergangseffekt für die Textfarbe */
-}
-
-.admin-link:hover {
-    color: #ff0000;
-    /* Textfarbe der Links beim Hovern (Rot) */
-    /* Hier kannst du die gewünschte Hervorhebungsfarbe einstellen */
+    opacity: 50;
 }
 
 .admin-link.active {
     /* Hier kannst du den Stil für den aktiven Link festlegen, z. B. Unterstreichung */
-    text-decoration: underline;
+    color: #fff;
+    opacity: 100;
 }

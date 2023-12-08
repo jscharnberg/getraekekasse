@@ -25,7 +25,7 @@ function App() {
         <Route path='/admin/login' element={<AdminLoginPage />} />
         <Route path='/' element={<Mainpage />} />
         <Route path='/admin/user' element={<UserManagementPage />} />
-        {<Route path='/admin/items' element={<ItemManagementPage />} />}
+        <Route path='/admin/items' element={<ItemManagementPage />} />
       </Routes>
     </div>
   );

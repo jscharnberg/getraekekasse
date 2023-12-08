@@ -199,6 +199,10 @@ export const UserManagementPage: React.FC = () => {
                     lastname: editedLastName,
                 };
 
+                if (newBalance !== null) {
+                    updatedUserData.accbalance = newBalance;
+                }
+
                 if (selectedUser.id === '') {
                     // Wenn die ID des ausgewählten Benutzers leer ist, füge einen neuen Benutzer hinzu
                     addNewUser(updatedUserData);
